@@ -1,7 +1,10 @@
 package com.crongze;
 
+import com.crongze.service.IDrawCardService;
 import com.sobte.cqp.jcq.entity.*;
 import com.sobte.cqp.jcq.event.JcqAppAbstract;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 /**
  * 本文件是JCQ插件的主类<br>
@@ -15,17 +18,12 @@ import com.sobte.cqp.jcq.event.JcqAppAbstract;
  * {@link JcqAppAbstract#CC CC}({@link com.sobte.cqp.jcq.message.CQCode 酷Q码操作类}),
  * 具体功能可以查看文档
  */
+@Service
+@RequiredArgsConstructor
 public class DrawCard extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
 
-    /**
-     * 用main方法调试可以最大化的加快开发效率，检测和定位错误位置<br/>
-     * 以下就是使用Main方法进行测试的一个简易案例
-     *
-     * @param args 系统参数
-     */
-    public static void main(String[] args) {
+    private final IDrawCardService drawCardService;
 
-    }
 
     /**
      * 打包后将不会调用 请不要在此事件中写其他代码
@@ -111,7 +109,23 @@ public class DrawCard extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      */
     public int privateMsg(int subType, int msgId, long fromQQ, String msg, int font) {
         // 这里处理消息
-        CQ.sendPrivateMsg(fromQQ, "你发送了这样的消息：" + msg + "\n来自Java插件");
+        //CQ.sendPrivateMsg(fromQQ, "你发送了这样的消息：" + msg + "\n来自Java插件");
+
+        /*
+         制卡c
+         名称必填，唯一，长度最大20汉字
+         描述必填，长度最大512汉字
+         相关链接必填，长度最大1024字符
+         卡片数据不作隔离，相当于只有世界服
+         */
+        drawCardService.createCard(CQ, subType, msgId, fromQQ, msg, font);
+
+        // 查看v 查看已获取卡片列表（仅列出卡片id、名称、数量）group by cardId & count id
+        drawCardService.viewCard(CQ, subType, msgId, fromQQ, msg, font);
+
+        // 查看详细信息vd 查看某已获取卡片的详细信息（根据id)
+        drawCardService.viewCardDetail(CQ, subType, msgId, fromQQ, msg, font);
+
         return MSG_IGNORE;
     }
 
@@ -147,7 +161,15 @@ public class DrawCard extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         //List<CQImage> images = CC.getCQImages(msg);// 此方法为获取消息中所有的CQ图片数据，错误时打印异常到控制台，返回 已解析的数据
 
         // 这里处理消息
-        CQ.sendGroupMsg(fromGroup, CC.at(fromQQ) + "你发送了这样的消息：" + msg + "\n来自Java插件");
+        //CQ.sendGroupMsg(fromGroup, CC.at(fromQQ) + "你发送了这样的消息：" + msg + "\n来自Java插件");
+
+        /*
+           抽取m 随机抽取一张卡片（根据random(1，dataLength)&limit randNum,1获取随机卡片）
+           抽到重复卡，也插入抽取记录
+           不限制抽取次数
+         */
+        drawCardService.drawCard(CQ, subType, msgId, fromGroup, fromQQ, fromAnonymous, msg, font);
+
         return MSG_IGNORE;
     }
 
