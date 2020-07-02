@@ -1,22 +1,13 @@
-package com.crongze.service.impl;
+package com.crongze.service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.crongze.model.Card;
-import com.crongze.service.ICardDrawRecordService;
-import com.crongze.service.ICardService;
-import com.crongze.service.IDrawCardService;
 import com.sobte.cqp.jcq.entity.CoolQ;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
-@Service
-@RequiredArgsConstructor
-public class DrawCardServiceImpl implements IDrawCardService {
-
-    private final ICardService cardService;
-    private final ICardDrawRecordService cardDrawRecordService;
+public class DrawCardService {
 
     /**
      *          制卡c 示例：c {name:"",description:"",linkUrl:""}
@@ -30,31 +21,32 @@ public class DrawCardServiceImpl implements IDrawCardService {
      * @param msg
      * @param font
      */
-    @Override
-    public void createCard(CoolQ CQ, int subType, int msgId, long fromQQ, String msg, int font) {
+    public void createCard(CoolQ coolQ, int subType, int msgId, long fromQQ, String msg, int font) {
         if(!msg.startsWith("c ")){
             return;
         }
-        StringBuilder msgBuilder = new StringBuilder(msg);
-        msgBuilder.delete(0, 2);
-        Card card = JSONObject.parseObject(msgBuilder.toString(), Card.class);
-        card.setCreateTime(LocalDateTime.now());
-        card.setFromQQ(fromQQ);
-        cardService.insert(card);
-        CQ.sendPrivateMsg(fromQQ, "您成功制作了一张新卡片");
+        //StringBuilder msgBuilder = new StringBuilder(msg);
+        //msgBuilder.delete(0, 2);
+        //Card card = JSONObject.parseObject(msgBuilder.toString(), Card.class);
+        //card.setCreateTime(LocalDateTime.now());
+        //card.setFromQQ(fromQQ);
+        // 读取卡片池数据
+        String appDirectory = coolQ.getAppDirectory();
+        // 获取应用数据目录(无需储存数据时，请将此行注释)
+        // 返回如：D:\CoolQ\app\com.sobte.cqp.jcq\app\com.example.demo\
+        // 应用的所有数据、配置【必须】存放于此目录，避免给用户带来困扰。
+        //JSONArray.
+        coolQ.sendPrivateMsg(fromQQ, "您成功制作了一张新卡片appDirectory："+appDirectory);
     }
 
-    @Override
     public void viewCard(CoolQ CQ, int subType, int msgId, long fromQQ, String msg, int font) {
 
     }
 
-    @Override
     public void viewCardDetail(CoolQ CQ, int subType, int msgId, long fromQQ, String msg, int font) {
 
     }
 
-    @Override
     public void drawCard(CoolQ CQ, int subType, int msgId, long fromGroup, long fromQQ, String fromAnonymous, String msg, int font) {
 
     }

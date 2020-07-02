@@ -1,11 +1,9 @@
 package com.crongze;
 
-import com.crongze.service.IDrawCardService;
+import com.crongze.service.DrawCardService;
 import com.sobte.cqp.jcq.entity.*;
 import com.sobte.cqp.jcq.event.JcqAppAbstract;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * 本文件是JCQ插件的主类<br>
@@ -19,12 +17,10 @@ import org.springframework.stereotype.Service;
  * {@link JcqAppAbstract#CC CC}({@link com.sobte.cqp.jcq.message.CQCode 酷Q码操作类}),
  * 具体功能可以查看文档
  */
-@Service
 @NoArgsConstructor
 public class DrawCard extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
 
-    @Autowired
-    private IDrawCardService drawCardService;
+    private static DrawCardService drawCardService = new DrawCardService();
 
 
     /**
@@ -32,6 +28,7 @@ public class DrawCard extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      *
      * @return 返回应用的ApiVer、Appid
      */
+    @Override
     public String appInfo() {
         // 应用AppID,规则见 http://d.cqp.me/Pro/开发/基础信息#appid
         String AppID = "com.crongze.draw-card";// 记住编译后的文件和json也要使用appid做文件名
@@ -79,11 +76,6 @@ public class DrawCard extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      */
     public int enable() {
         enable = true;
-        try {
-            DrawCardApplication.main(new String[]{});
-        }catch (Exception e){
-            CQ.sendPrivateMsg(1126490283, "DrawCardApplication.main(new String[]{}); 异常："+e.getMessage());
-        }
         CQ.sendPrivateMsg(1126490283, "启用success");
         return 0;
     }
