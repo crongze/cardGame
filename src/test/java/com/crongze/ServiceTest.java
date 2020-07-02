@@ -17,7 +17,7 @@ public class ServiceTest {
     @Test
     public void createCard(){
         //privateMsg(int subType, int msgId, long fromQQ, String msg, int font
-        drawCard.privateMsg(1, 1, 1111L, "c {name:\"名称\",description:\"描述\",linkUrl:\"相关链接\"}", 1);
+        //drawCard.privateMsg(1, 1, 1111L, "c {name:\"名称\",description:\"描述\",linkUrl:\"相关链接\"}", 1);
     }
 
 }

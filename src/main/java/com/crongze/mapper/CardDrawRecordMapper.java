@@ -1,7 +1,7 @@
 package com.crongze.mapper;
 
-import com.crongze.model.CardDrawRecord;
 import com.baomidou.mybatisplus.mapper.AutoMapper;
+import com.crongze.model.CardDrawRecord;
 
 /**
  *

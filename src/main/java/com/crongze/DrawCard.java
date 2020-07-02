@@ -3,7 +3,8 @@ package com.crongze;
 import com.crongze.service.IDrawCardService;
 import com.sobte.cqp.jcq.entity.*;
 import com.sobte.cqp.jcq.event.JcqAppAbstract;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,10 +20,11 @@ import org.springframework.stereotype.Service;
  * 具体功能可以查看文档
  */
 @Service
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class DrawCard extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
 
-    private final IDrawCardService drawCardService;
+    @Autowired
+    private IDrawCardService drawCardService;
 
 
     /**
@@ -32,7 +34,7 @@ public class DrawCard extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      */
     public String appInfo() {
         // 应用AppID,规则见 http://d.cqp.me/Pro/开发/基础信息#appid
-        String AppID = "com.crongze.drawCard";// 记住编译后的文件和json也要使用appid做文件名
+        String AppID = "com.crongze.draw-card";// 记住编译后的文件和json也要使用appid做文件名
         /**
          * 本函数【禁止】处理其他任何代码，以免发生异常情况。
          * 如需执行初始化代码请在 startup 事件中执行（Type=1001）。
@@ -77,6 +79,12 @@ public class DrawCard extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      */
     public int enable() {
         enable = true;
+        try {
+            DrawCardApplication.main(new String[]{});
+        }catch (Exception e){
+            CQ.sendPrivateMsg(1126490283, "DrawCardApplication.main(new String[]{}); 异常："+e.getMessage());
+        }
+        CQ.sendPrivateMsg(1126490283, "启用success");
         return 0;
     }
 
@@ -109,7 +117,7 @@ public class DrawCard extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      */
     public int privateMsg(int subType, int msgId, long fromQQ, String msg, int font) {
         // 这里处理消息
-        //CQ.sendPrivateMsg(fromQQ, "你发送了这样的消息：" + msg + "\n来自Java插件");
+        CQ.sendPrivateMsg(fromQQ, "收到私聊消息success");
 
         /*
          制卡c
@@ -125,6 +133,8 @@ public class DrawCard extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
 
         // 查看详细信息vd 查看某已获取卡片的详细信息（根据id)
         drawCardService.viewCardDetail(CQ, subType, msgId, fromQQ, msg, font);
+
+        CQ.sendPrivateMsg(fromQQ, "私聊消息处理完毕");
 
         return MSG_IGNORE;
     }
