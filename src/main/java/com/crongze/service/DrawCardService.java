@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.crongze.model.Card;
 import com.sobte.cqp.jcq.entity.CoolQ;
+import org.springframework.util.StringUtils;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -35,53 +36,48 @@ public class DrawCardService {
         Card newCard = null;
         try {
             newCard = JSONObject.parseObject(msgBuilder.toString(), Card.class);
-            if(StringUtil)
+            if(!StringUtils.hasText(newCard.getName())){
+                coolQ.sendPrivateMsg(fromQQ, "name不得为空");
+                return;
+            }
+            if(!StringUtils.hasText(newCard.getDescription())){
+                coolQ.sendPrivateMsg(fromQQ, "description不得为空");
+                return;
+            }
+            if(!StringUtils.hasText(newCard.getLinkUrl())){
+                coolQ.sendPrivateMsg(fromQQ, "linkUrl不得为空");
+                return;
+            }
         }catch (Exception e){
             coolQ.sendPrivateMsg(fromQQ, "卡片格式错误，请仔细检查。可参考：c {name:\"测试name\",description:\"测试description\",linkUrl:\"测试linkUrl\"}");
-
+            return;
         }
 
+        newCard.setCreateTime(LocalDateTime.now());
+        newCard.setFromQQ(fromQQ);
 
-
-        card.setCreateTime(LocalDateTime.now());
-        card.setFromQQ(fromQQ);
-
-        // 获取应用目录 appDirectory：Z:\home\user\coolq\data\app\com.sobte.cqp.jcq\app\com.crongze.draw-card\
-        //String appDirectoryUrl = coolQ.getAppDirectory();
-        //File appDirectory = new File(appDirectoryUrl);
-        //if(!appDirectory.exists()){
-        //    appDirectory.createNewFile();
-        //}
-
-        // 获取卡片数据文件
-        String cardsDBFileUrl = coolQ.getAppDirectory() + "data\\cards.db";
-        File cardsDBFile = new File(cardsDBFileUrl);
-        if(!cardsDBFile.exists()){
-            try {
-                cardsDBFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        // 校验卡名是否重复
+        // appDirectory：Z:\home\user\coolq\data\app\com.sobte.cqp.jcq\app\com.crongze.draw-card\
+        String cardFileUrl = coolQ.getAppDirectory() + "data\\cards\\" + newCard.getName().trim() + ".db";
+        File cardFile = new File(cardFileUrl);
+        if(cardFile.exists()){
+            coolQ.sendPrivateMsg(fromQQ, "制作失败，已有相同名称的卡片");
+            return;
         }
 
-        // TODO 卡片数据文件转JsonArray
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(cardsDBFile));
+        cardFile.createNewFile();
+
+        // 新增卡片数据文件
+        BufferedWriter writer = new BufferedWriter(new FileWriter(cardFile));
         StringBuilder stringBuilder = new StringBuilder();
         String content;
         while((content = bufferedReader.readLine() ) != null){
             stringBuilder.append(content);
         }
-        List<Card> cards = JSONArray.parseArray(stringBuilder.toString(), Card.class);
 
-        // TODO 校验卡片名重复
+        writer.write();
 
-        // 新增卡片数据
-        cards.add(card);
-
-        // 写出卡片数据文件
-
-
-        coolQ.sendPrivateMsg(fromQQ, "您成功制作了一张新卡片："+cardsDBFileUrl);
+        coolQ.sendPrivateMsg(fromQQ, "您成功制作了一张新卡片：" + newCard.getName().trim());
     }
 
     public void viewCard(CoolQ CQ, int subType, int msgId, long fromQQ, String msg, int font) {
