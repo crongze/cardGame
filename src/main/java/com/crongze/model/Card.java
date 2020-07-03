@@ -15,9 +15,6 @@ public class Card implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	/** 主键id */
-	private Long id;
-
 	/** 卡片名称 */
 	private String name;
 

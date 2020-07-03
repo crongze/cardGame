@@ -118,7 +118,11 @@ public class DrawCard extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
          相关链接必填，长度最大1024字符
          卡片数据不作隔离，相当于只有世界服
          */
-        drawCardService.createCard(CQ, subType, msgId, fromQQ, msg, font);
+        try {
+            drawCardService.createCard(CQ, subType, msgId, fromQQ, msg, font);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // 查看v 查看已获取卡片列表（仅列出卡片id、名称、数量）group by cardId & count id
         drawCardService.viewCard(CQ, subType, msgId, fromQQ, msg, font);
