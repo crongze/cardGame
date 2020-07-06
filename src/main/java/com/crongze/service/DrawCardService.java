@@ -14,25 +14,12 @@ import java.util.Random;
 
 public class DrawCardService {
 
-
-    /**
-     *          制卡c 示例：c {name:"",description:"",linkUrl:""}
-     *          名称必填，唯一，长度最大20字符
-     *          描述必填，长度最大512字符
-     *          相关链接必填，长度最大1024字符
-     *          卡片数据不作隔离，相当于只有世界服
-     * @param subType
-     * @param msgId
-     * @param fromQQ
-     * @param msg
-     * @param font
-     */
-    public void createCard(CoolQ coolQ, int subType, int msgId, long fromQQ, String msg, int font) throws Exception{
-        if(msg.equals("c")){
-            coolQ.sendPrivateMsg(fromQQ, "您没有指定卡片创建数据。请参考：c {name:\"测试name\",description:\"测试description\",linkUrl:\"测试linkUrl\"}");
+    public void createCard(CoolQ coolQ, int subType, int msgId, long fromQQ, String msg, int font, String lowerMsg) throws Exception{
+        if(lowerMsg.equals("c") || lowerMsg.equals("制卡")){
+            coolQ.sendPrivateMsg(fromQQ, "您没有指定卡片创建数据。请参考：【c {name:\"卡片名必填，唯一，长度最大20字符\",description:\"卡片描述必填，长度最大512字符\",linkUrl:\"相关链接选填，长度最大1024字符\"}】");
             return;
         }
-        if(!msg.startsWith("c ")){
+        if(!lowerMsg.startsWith("c ") && !lowerMsg.startsWith("制卡 ")){
             return;
         }
 
@@ -44,7 +31,7 @@ public class DrawCardService {
         try {
             newCard = JSONObject.parseObject(msgBuilder.toString(), Card.class);
             if(!StringUtils.hasText(newCard.getName())){
-                coolQ.sendPrivateMsg(fromQQ, "制作失败，name不得为空。请参考：c {name:\"测试name\",description:\"测试description\",linkUrl:\"测试linkUrl\"}");
+                coolQ.sendPrivateMsg(fromQQ, "制作失败，name不得为空。请参考：【c {name:\"卡片名必填，唯一，长度最大20字符\",description:\"卡片描述必填，长度最大512字符\",linkUrl:\"相关链接选填，长度最大1024字符\"}】");
                 return;
             }
             if(newCard.getName().length() > 20){
@@ -76,7 +63,7 @@ public class DrawCardService {
                 return;
             }
             if(!StringUtils.hasText(newCard.getDescription())){
-                coolQ.sendPrivateMsg(fromQQ, "制作失败，description不得为空。请参考：c {name:\"测试name\",description:\"测试description\",linkUrl:\"测试linkUrl\"}");
+                coolQ.sendPrivateMsg(fromQQ, "制作失败，description不得为空。请参考：【c {name:\"卡片名必填，唯一，长度最大20字符\",description:\"卡片描述必填，长度最大512字符\",linkUrl:\"相关链接选填，长度最大1024字符\"}】");
                 return;
             }
             if(newCard.getDescription().length() > 512){
@@ -84,15 +71,14 @@ public class DrawCardService {
                 return;
             }
             if(!StringUtils.hasText(newCard.getLinkUrl())){
-                coolQ.sendPrivateMsg(fromQQ, "制作失败，linkUrl不得为空。请参考：c {name:\"测试name\",description:\"测试description\",linkUrl:\"测试linkUrl\"}");
-                return;
+                newCard.setLinkUrl("暂无");
             }
             if(newCard.getLinkUrl().length() > 1024){
                 coolQ.sendPrivateMsg(fromQQ, "制作失败，linkUrl超出最大长度1024字符");
                 return;
             }
         }catch (Exception e){
-            coolQ.sendPrivateMsg(fromQQ, "卡片数据格式错误，非json格式，请仔细检查。请参考：c {name:\"测试name\",description:\"测试description\",linkUrl:\"测试linkUrl\"}");
+            coolQ.sendPrivateMsg(fromQQ, "卡片数据格式错误，非json格式，请仔细检查。请参考：【c {name:\"卡片名必填，唯一，长度最大20字符\",description:\"卡片描述必填，长度最大512字符\",linkUrl:\"相关链接选填，长度最大1024字符\"}】");
             return;
         }
 
@@ -126,8 +112,8 @@ public class DrawCardService {
         coolQ.sendPrivateMsg(fromQQ, "恭喜！您成功制作了一张新卡片：" + newCard.getName());
     }
 
-    public void viewCard(CoolQ coolQ, int subType, int msgId, long fromQQ, String msg, int font) throws Exception{
-        if(!msg.equals("v")){
+    public void viewCard(CoolQ coolQ, int subType, int msgId, long fromQQ, String msg, int font, String lowerMsg) throws Exception{
+        if(!lowerMsg.equals("v") && !lowerMsg.equals("卡列表")){
             return;
         }
         String recordDirectoryUrl = coolQ.getAppDirectory() + "data\\draw_record\\" + fromQQ;
@@ -154,12 +140,12 @@ public class DrawCardService {
         coolQ.sendPrivateMsg(fromQQ, cardList.toString());
     }
 
-    public void viewCardDetail(CoolQ coolQ, int subType, int msgId, long fromQQ, String msg, int font) throws Exception{
-        if(msg.equals("vd")){
+    public void viewCardDetail(CoolQ coolQ, int subType, int msgId, long fromQQ, String msg, int font, String lowerMsg) throws Exception{
+        if(lowerMsg.equals("vd") || lowerMsg.equals("卡详情")){
             coolQ.sendPrivateMsg(fromQQ, "您没有指定查看的卡片。提示：您可以通过指令 vd 列表序号/卡片名 来查看某张卡片的详细信息哦！比如：vd 1 or vd 卡片名");
             return;
         }
-        if(!msg.startsWith("vd ")){
+        if(!lowerMsg.startsWith("vd ") && !lowerMsg.startsWith("卡详情 ")){
             return;
         }
 
@@ -207,8 +193,8 @@ public class DrawCardService {
         coolQ.sendPrivateMsg(fromQQ, cardMessage.toString());
     }
 
-    public void drawCard(CoolQ coolQ, CQCode cQCode, int subType, int msgId, long fromGroup, long fromQQ, String fromAnonymous, String msg, int font) throws Exception{
-        if(!msg.equals("m")){
+    public void drawCard(CoolQ coolQ, CQCode cQCode, int subType, int msgId, long fromGroup, long fromQQ, String fromAnonymous, String msg, int font, String lowerMsg) throws Exception{
+        if(!lowerMsg.equals("m") && !lowerMsg.equals("抽卡")){
             return;
         }
 
@@ -221,16 +207,16 @@ public class DrawCardService {
 
         // 校验是否有卡片
         if(!cardDB.exists() || cardDB.list().length == 0){
-            coolQ.sendGroupMsg(fromGroup, cQCode.at(fromQQ) + " 暂无卡片。您可以试试私聊我，自己创建新卡片哦！创建命令请参考：c {name:\"测试name\",description:\"测试description\",linkUrl:\"测试linkUrl\"}");
+            coolQ.sendGroupMsg(fromGroup, cQCode.at(fromQQ) + " 暂无卡片。您可以试试私聊我，自己创建新卡片哦！创建命令请参考：【c {name:\"卡片名必填，唯一，长度最大20字符\",description:\"卡片描述必填，长度最大512字符\",linkUrl:\"相关链接选填，长度最大1024字符\"}】");
             return;
         }
 
         // 暂时设定为一半概率抽不到卡片 默认true为没抽到
         Random random = new Random();
-        if(random.nextBoolean()){
-            coolQ.sendGroupMsg(fromGroup, cQCode.at(fromQQ) + " 真可惜，您什么卡片都没有抽到呢！要不...再试试吧？");
-            return;
-        }
+        //if(random.nextBoolean()){
+        //    coolQ.sendGroupMsg(fromGroup, cQCode.at(fromQQ) + " 真可惜，您什么卡片都没有抽到呢！要不...再试试吧？");
+        //    return;
+        //}
 
         // 随机获取一张卡片
         File[] cards = cardDB.listFiles();
@@ -277,28 +263,54 @@ public class DrawCardService {
 
         // 发送成功提示信息
         StringBuilder successTip = new StringBuilder();
-        successTip.append(cQCode.at(fromQQ) + " 恭喜您抽取到了：" + card.getName() + "\n");
-        successTip.append("卡片名称：" + card.getName() + "\n");
-        successTip.append("卡片描述：" + card.getDescription() + "\n");
-        successTip.append("相关链接：" + card.getLinkUrl() + "\n");
-        successTip.append("制卡人：" + cQCode.at(card.getFromQQ()));
+        successTip.append(cQCode.at(fromQQ) + " 恭喜您抽取到了：\n");
+        successTip.append("【卡片名称】：" + card.getName() + "\n");
+        successTip.append("【卡片描述】：" + card.getDescription() + "\n");
+        successTip.append("【相关链接】：" + card.getLinkUrl() + "\n");
+        successTip.append("【制卡人】：" + cQCode.at(card.getFromQQ()));
         coolQ.sendGroupMsg(fromGroup, successTip.toString());
     }
 
-    public void viewHelp(CoolQ coolQ, CQCode cQCode, int subType, int msgId, long fromGroup, long fromQQ, String fromAnonymous, String msg, int font){
-        if(!msg.equals("s -h") && !msg.equals("s -help")){
+    public void viewHelp(CoolQ coolQ, CQCode cQCode, int subType, int msgId, long fromGroup, long fromQQ, String fromAnonymous, String msg, int font, String lowerMsg){
+        if(!lowerMsg.equals("h") && !lowerMsg.equals("查看帮助") && !lowerMsg.equals("help")){
             return;
         }
         // 发送成功提示信息
         StringBuilder successTip = new StringBuilder();
         successTip.append(cQCode.at(fromQQ) + " 您好，小新是一个基础的抽卡系统，目前小新支持以下功能： \n");
-        successTip.append("群聊场景：\n");
-        successTip.append("\tm：抽卡\n");
-        successTip.append("\ts -h or s -help：查看帮助\n");
-        successTip.append("私聊场景：\n");
-        successTip.append("\tc：制卡，制作新卡片（该卡片要通过抽取才能获得哦），参数为json格式的卡片数据，可参考：c {name:\"测试name\",description:\"测试description\",linkUrl:\"测试linkUrl\"}，name是卡片名（必填，最长20字符），description是卡片描述（必填，最长512字符），linkUrl是卡片相关链接（必填，最长1024字符）\n");
-        successTip.append("\tv：查看已抽取的卡片列表\n");
-        successTip.append("\tvd：查看某张卡片的详情，参数为 列表序号 or 卡片名，可参考：vd 1 or vd 卡片名\n");
+        successTip.append("\t抽卡：随机抽取卡片。指令为【抽卡】或【m】\n");
+        successTip.append("\t制卡:制作新卡片。指令为【制卡】或【c】");
+        successTip.append("\t查看卡列表：指令为【卡列表】或【v】\n");
+        successTip.append("\t查看卡片详情：指令为【卡详情】或【vd】\n");
+        successTip.append("\t查看卡片库：指令为【卡片库】或【cdb】\n");
+        successTip.append("\t查看系统帮助：指令为【查看帮助】或【h】或【help】\n");
+        successTip.append("\n");
+        successTip.append("提示：【抽卡】、【查看卡片库】、【查看系统帮助】只支持群聊，【制卡】、【查看卡列表】、【查看卡片详情】只支持私聊\n");
+        successTip.append("提示：【制卡】条件：参考demo指令【c {name:\"卡片名必填，唯一，长度最大20字符\",description:\"卡片描述必填，长度最大512字符\",linkUrl:\"相关链接选填，长度最大1024字符\"}】。");
+
         coolQ.sendGroupMsg(fromGroup, successTip.toString());
+    }
+
+    public void viewCardDataBase(CoolQ coolQ, CQCode cQCode, int subType, int msgId, long fromGroup, long fromQQ, String fromAnonymous, String msg, int font, String lowerMsg) throws Exception{
+        if(!lowerMsg.equals("cdb") && !lowerMsg.equals("卡片库")){
+            return;
+        }
+        // 获取卡片数据库
+        String cardDBUrl = coolQ.getAppDirectory() + "data\\cards";
+        File cardDB = new File(cardDBUrl);
+
+        // 校验是否有卡片
+        if(!cardDB.exists() || cardDB.list().length == 0){
+            coolQ.sendGroupMsg(fromGroup, cQCode.at(fromQQ) + " 暂无卡片。您可以试试私聊我，自己创建新卡片哦！创建命令请参考：【c {name:\"卡片名必填，唯一，长度最大20字符\",description:\"卡片描述必填，长度最大512字符\",linkUrl:\"相关链接选填，长度最大1024字符\"}】");
+            return;
+        }
+        StringBuilder cardList = new StringBuilder();
+        String[] cardNames = cardDB.list();
+        cardList.append("以下是系统中存在的 "+ cardNames.length +" 张卡片：\n");
+        for (int i = 0; i < cardNames.length; i++) {
+            cardList.append("【" + cardNames[i].replace(".card", "") + "】\n");
+        }
+        cardList.append("您可以通过指令【抽卡】或【m】来抽取它们");
+        coolQ.sendGroupMsg(fromGroup, cardList.toString());
     }
 }

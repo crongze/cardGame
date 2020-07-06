@@ -107,24 +107,25 @@ public class DrawCard extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      */
     public int privateMsg(int subType, int msgId, long fromQQ, String msg, int font) {
         msg = msg.trim();
+        String lowerMsg = msg.toLowerCase();
 
         // 制卡c
         try {
-            drawCardService.createCard(CQ, subType, msgId, fromQQ, msg, font);
+            drawCardService.createCard(CQ, subType, msgId, fromQQ, msg, font, lowerMsg);
         } catch (Exception e) {
             CQ.sendPrivateMsg(fromQQ, "createCard 异常：" + e.getMessage());
         }
 
         // 查看v 查看已获取卡片列表（仅列出名称、数量）
         try {
-            drawCardService.viewCard(CQ, subType, msgId, fromQQ, msg, font);
+            drawCardService.viewCard(CQ, subType, msgId, fromQQ, msg, font, lowerMsg);
         } catch (Exception e) {
             CQ.sendPrivateMsg(fromQQ, "viewCard 异常：" + e.getMessage());
         }
 
         // 查看详细信息vd 查看某已获取卡片的详细信息（根据 列表序号 or 卡片名)
         try {
-            drawCardService.viewCardDetail(CQ, subType, msgId, fromQQ, msg, font);
+            drawCardService.viewCardDetail(CQ, subType, msgId, fromQQ, msg, font, lowerMsg);
         } catch (Exception e) {
             CQ.sendPrivateMsg(fromQQ, "viewCardDetail 异常：" + e.getMessage());
         }
@@ -148,6 +149,7 @@ public class DrawCard extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
     public int groupMsg(int subType, int msgId, long fromGroup, long fromQQ, String fromAnonymous, String msg,
                         int font) {
         msg = msg.trim();
+        String lowerMsg = msg.toLowerCase();
 
         // 如果消息来自匿名者
         if (fromQQ == 80000000L && !fromAnonymous.equals("")) {
@@ -165,18 +167,21 @@ public class DrawCard extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
         //CQImage image = CC.getCQImage(msg);// 此方法为简便方法，获取第一个CQ:image里的图片数据，错误时打印异常到控制台，返回 null
         //List<CQImage> images = CC.getCQImages(msg);// 此方法为获取消息中所有的CQ图片数据，错误时打印异常到控制台，返回 已解析的数据
 
-        // 这里处理消息
-        //CQ.sendGroupMsg(fromGroup, CC.at(fromQQ) + "你发送了这样的消息：" + msg + "\n来自Java插件");
-
-        drawCardService.viewHelp(CQ, CC, subType, msgId, fromGroup, fromQQ, fromAnonymous, msg, font);
+        drawCardService.viewHelp(CQ, CC, subType, msgId, fromGroup, fromQQ, fromAnonymous, msg, font, lowerMsg);
         /*
-           抽取m 随机抽取一张卡片（根据random(1，dataLength)&limit randNum,1获取随机卡片）
+           抽取m 随机抽取一张卡片
            不限制抽取次数
          */
         try {
-            drawCardService.drawCard(CQ, CC, subType, msgId, fromGroup, fromQQ, fromAnonymous, msg, font);
+            drawCardService.drawCard(CQ, CC, subType, msgId, fromGroup, fromQQ, fromAnonymous, msg, font, lowerMsg);
         } catch (Exception e) {
             CQ.sendGroupMsg(fromGroup, CC.at(fromQQ) + " drawCard 异常：" + e.getMessage());
+        }
+
+        try {
+            drawCardService.viewCardDataBase(CQ, CC, subType, msgId, fromGroup, fromQQ, fromAnonymous, msg, font, lowerMsg);
+        } catch (Exception e) {
+            CQ.sendGroupMsg(fromGroup, CC.at(fromQQ) + " viewCardDataBase 异常：" + e.getMessage());
         }
 
         return MSG_IGNORE;
