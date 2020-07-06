@@ -191,10 +191,10 @@ public class DrawCardService {
         }
         Card card = JSONObject.parseObject(builder.toString(), Card.class);
         StringBuilder cardMessage = new StringBuilder();
-        cardMessage.append("【卡片名称】：" + card.getName() + "\n");
-        cardMessage.append("【卡片描述】：" + card.getDescription() + "\n");
-        cardMessage.append("【相关链接】：" + card.getLinkUrl() + "\n");
-        cardMessage.append("【制卡人】：" + card.getFromQQ());
+        cardMessage.append("【卡片名称】\n\t" + card.getName() + "\n");
+        cardMessage.append("【卡片描述】\n\t" + card.getDescription() + "\n");
+        cardMessage.append("【相关链接】\n\t" + card.getLinkUrl() + "\n");
+        cardMessage.append("【制卡人】\n\t" + card.getFromQQ());
         coolQ.sendPrivateMsg(fromQQ, cardMessage.toString());
     }
 
@@ -269,10 +269,10 @@ public class DrawCardService {
         // 发送成功tip信息
         StringBuilder successTip = new StringBuilder();
         successTip.append(cQCode.at(fromQQ) + " 恭喜您抽取到了：\n");
-        successTip.append("【卡片名称】：" + card.getName() + "\n");
-        successTip.append("【卡片描述】：" + card.getDescription() + "\n");
-        successTip.append("【相关链接】：" + card.getLinkUrl() + "\n");
-        successTip.append("【制卡人】：" + cQCode.at(card.getFromQQ()));
+        successTip.append("【卡片名称】\n\t" + card.getName() + "\n");
+        successTip.append("【卡片描述】\n\t" + card.getDescription() + "\n");
+        successTip.append("【相关链接】\n\t" + card.getLinkUrl() + "\n");
+        successTip.append("【制卡人】\n\t" + cQCode.at(card.getFromQQ()));
         coolQ.sendGroupMsg(fromGroup, successTip.toString());
     }
 
@@ -313,7 +313,7 @@ public class DrawCardService {
         }
         StringBuilder cardList = new StringBuilder();
         String[] cardNames = cardDB.list();
-        cardList.append("目前系统中有 "+ cardNames.length +" 张卡片：\n\n");
+        cardList.append("目前系统中共有 "+ cardNames.length +" 张卡片：\n\n");
         for (int i = 0; i < cardNames.length; i++) {
             cardList.append((i+1)+".【" + cardNames[i].replace(".card", "") + "】\n");
         }
