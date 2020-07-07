@@ -27,6 +27,9 @@ public class Card implements Serializable {
 	/** 制卡人QQ号 */
 	private Long fromQQ;
 
+    /** 制卡人QQ昵称 */
+    private String fromQQNick;
+
 	/** 创建时间 */
 	private LocalDateTime createTime;
 
