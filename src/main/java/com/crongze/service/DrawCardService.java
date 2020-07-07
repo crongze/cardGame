@@ -3,6 +3,7 @@ package com.crongze.service;
 import com.alibaba.fastjson.JSONObject;
 import com.crongze.model.Card;
 import com.crongze.model.CardDrawRecord;
+import com.crongze.util.QQNickUtil;
 import com.sobte.cqp.jcq.entity.CoolQ;
 import com.sobte.cqp.jcq.message.CQCode;
 import org.springframework.util.StringUtils;
@@ -84,6 +85,7 @@ public class DrawCardService {
 
         newCard.setCreateTime(LocalDateTime.now());
         newCard.setFromQQ(fromQQ);
+        newCard.setFromQQNick(QQNickUtil.getQQNick(fromQQ));
 
         // 校验卡名是否重复
         String cardFileUrl = coolQ.getAppDirectory() + "data\\cards\\" + newCard.getName().trim() + ".card";
@@ -194,7 +196,7 @@ public class DrawCardService {
         cardMessage.append("【卡片名称】\n\t" + card.getName() + "\n");
         cardMessage.append("【卡片描述】\n\t" + card.getDescription() + "\n");
         cardMessage.append("【相关链接】\n\t" + card.getLinkUrl() + "\n");
-        cardMessage.append("【制卡人】\n\t" + card.getFromQQ());
+        cardMessage.append("【制卡人】\n\t" + card.getFromQQNick());
         coolQ.sendPrivateMsg(fromQQ, cardMessage.toString());
     }
 
@@ -272,7 +274,7 @@ public class DrawCardService {
         successTip.append("【卡片名称】\n\t" + card.getName() + "\n");
         successTip.append("【卡片描述】\n\t" + card.getDescription() + "\n");
         successTip.append("【相关链接】\n\t" + card.getLinkUrl() + "\n");
-        successTip.append("【制卡人】\n\t" + cQCode.at(card.getFromQQ()));
+        successTip.append("【制卡人】\n\t" + card.getFromQQNick());
         coolQ.sendGroupMsg(fromGroup, successTip.toString());
     }
 
